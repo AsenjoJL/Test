@@ -1,18 +1,26 @@
-//app.js
 const express = require('express');
-const app = express();
-const port = 3000;
+const router = express.Router();
 
-// Middleware to parse JSON request bodies
-app.use(express.json());
+// Sample exams data stored in an array
+let exams = [
+  { id: 1, name: "Math Exam", date: "2025-04-01" },
+  { id: 2, name: "Science Exam", date: "2025-04-05" }
+];
 
-// Import the routes from the items.js file
-const itemsRoute = require('./routes/items');
+// POST /exams - Add a new exam
+router.post('/', (req, res) => {
+  const newExam = req.body;
 
-// Use the routes for the `/items` endpoint
-app.use('/items', itemsRoute);
+  // Validate that required fields exist
+  if (!newExam.name || !newExam.date) {
+    return res.status(400).json({ message: "Exam name and date are required." });
+  }
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  // Assign a new ID
+  newExam.id = exams.length + 1;
+  exams.push(newExam);
+
+  res.status(201).json(newExam);
 });
+
+module.exports = router;
